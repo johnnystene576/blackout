@@ -1,22 +1,47 @@
 import os, sys, json
 
-versionString = "blackout 1.2 RC1"
+class ANSI:
+    def __init__(self):
+        self.BLACK = "\u001b[30m"
+        self.RED = "\u001b[31m"
+        self.GREEN = "\u001b[32m"
+        self.YELLOW = "\u001b[33m"
+        self.BLUE = "\u001b[34m"
+        self.MAGENTA = "\u001b[35m"
+        self.CYAN = "\u001b[36m"
+        self.RESET = "\u001b[0m"
+        self.WHITE = "\u001b[37;1m"
+        self.REVERSED = "\u001b[7m"
+        self.BOLD = "\u001b[1m"
+        self.BACKRED = "\u001b[41m"
+
+ansi = ANSI()
+versionString = ansi.WHITE + ansi.REVERSED + "blackout 1.2 " + ansi.CYAN + "Release Candidate 2" + ansi.RESET
+
+def error(text):
+	print(ansi.RESET + ansi.BOLD + ansi.RED + " [-] " + ansi.RESET + text)
+
+def success(text):
+	print(ansi.RESET + ansi.BOLD + ansi.GREEN + " [-] " + ansi.RESET + text)
+
+def info(text):
+	print(ansi.RESET + ansi.BOLD + ansi.MAGENTA + " [-] " + ansi.RESET + text)
+
+print(versionString)
 
 # load database
 try:
 	with open("database.json") as jsonfile:
 		database = json.load(jsonfile)
 except:
-	print(" [-] Couldn't load database. Building a new one.")
 	database = {}
 	database["wordlist"] = []
 	database["accounts"] = {}
-
-print(versionString)
+	print(ansi.RED + ansi.BOLD + "WARNING: The database was unreadable or missing and has been reset. DO NOT SAVE if you don't have backups." + ansi.RESET)
 
 while True:
 	# get input
-	command = input("> ")
+	command = input(ansi.BOLD + ansi.YELLOW + "blackout> " + ansi.RESET)
 	
 	# seperate args and the command
 	args = command.split(" ")[1:]
@@ -31,13 +56,13 @@ while True:
 		try:
 			with open('database.json', 'w') as fp:
 				json.dump(database, fp) 
-			print(" [+] Saved successfully!")
+			success("Saved successfully!")
 				 
 		except OSError:
-			print(" [-] Error! Permissions probably bad. (OSError)")
+			error("Error! Permissions probably bad. (OSError)")
 			
 		except:
-			print(" [-] Unknown error!")
+			error("Unknown error!")
 	
 	if(command == "generate"):
 		try:
@@ -66,9 +91,9 @@ while True:
 						i = 0
 				with open("wordlist.txt", "w") as f:
 					f.write(export)
-				print(" [+] Successfully generated a wordlist! Check wordlist.txt")
+				success("Successfully generated a wordlist! Check wordlist.txt")
 		except:
-			print(" [-] Unknown error.")
+			error("Unknown error.")
 						
 	
 	# search database for account
@@ -79,7 +104,7 @@ while True:
 					if(args[0] in account):
 						print("Found account! (service: " + service + ") Login: " + account + ":" + database["accounts"][service][account])
 		except:
-			print(" [*] Usage:")
+			info("Usage:")
 			print("     lookup (username/email)")
 	
 	if(command == "list"): # self-explanitory
@@ -100,7 +125,7 @@ while True:
 			else:
 				args[0] = args[0] / 0
 		except:
-			print(" [*] Usage:")
+			info("Usage:")
 			print("     List accounts/services/passwords")
 	
 	if(command == "load" or command == "import"): # import file
@@ -140,10 +165,10 @@ while True:
 						database["accounts"][service][account[0]] = account[1]
 				
 		except FileNotFoundError:
-			print(" [-] File not found.")
+			error("File not found.")
 		
 		except:
-			print(" [*] Usage:")
+			info("Usage:")
 			print("     import file accounts service - Import an account and sort by service. Default service is mixed.")
 			print("     import file wordlist - Use only for password wordlists - seperated by newline.")
 				
