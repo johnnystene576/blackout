@@ -16,7 +16,7 @@ class ANSI:
         self.BACKRED = "\u001b[41m"
 
 ansi = ANSI()
-versionString = ansi.WHITE + ansi.REVERSED + "blackout 1.2 " + ansi.CYAN + "Release Candidate 2" + ansi.RESET
+versionString = ansi.WHITE + ansi.REVERSED + "blackout 1.2" + ansi.CYAN + "RC3" + ansi.RESET
 
 def error(text):
 	print(ansi.RESET + ansi.BOLD + ansi.RED + " [-] " + ansi.RESET + text)
@@ -33,19 +33,52 @@ print(versionString)
 try:
 	with open("database.json") as jsonfile:
 		database = json.load(jsonfile)
-except:
+except FileNotFoundError:
 	database = {}
+	database["color"] = ansi.YELLOW
 	database["wordlist"] = []
 	database["accounts"] = {}
-	print(ansi.RED + ansi.BOLD + "WARNING: The database was unreadable or missing and has been reset. DO NOT SAVE if you don't have backups." + ansi.RESET)
+	print(ansi.RED + ansi.BOLD + "WARNING: I couldn't find the database file! Rebuilt DB." + ansi.RESET)
+except OSError:
+	database = {}
+	database["color"] = ansi.YELLOW
+	database["wordlist"] = []
+	database["accounts"] = {}
+	print(ansi.RED + ansi.BOLD + "WARNING: You don't appear to have permissions for database.json! Database reset." + ansi.RESET)
+except:
+	database = {}
+	database["color"] = ansi.YELLOW
+	database["wordlist"] = []
+	database["accounts"] = {}
+	print(ansi.RED + ansi.BOLD + "WARNING: The database was unreadable and has been reset." + ansi.RESET)
+
+promptColor = database["color"]
 
 while True:
 	# get input
-	command = input(ansi.BOLD + ansi.YELLOW + "blackout> " + ansi.RESET)
+	command = input(ansi.BOLD + promptColor + "blackout> " + ansi.WHITE)
 	
 	# seperate args and the command
 	args = command.split(" ")[1:]
 	command = command.split(" ")[0]
+	
+	if(command == "color"):
+		try:
+			if(args[0] == "yellow"):
+				promptColor = ansi.YELLOW
+			elif(args[0] == "red"):
+				promptColor = ansi.RED
+			elif(args[0] == "magenta" or args[0] == "purple"):
+				promptColor = ansi.MAGENTA
+			elif(args[0] == "green"):
+				promptColor = ansi.GREEN
+			elif(args[0] == "blue" or args[0] == "cyan"):
+				promptColor = ansi.CYAN
+			elif(args[0] == "white"):
+				promptColor = ansi.WHITE
+		except:
+			info("Usage:")
+			print("      color red/green/blue/yellow/purple/magenta/cyan/white")
 	
 	# clear screen
 	if(command == "cls" or command == "clear"):
