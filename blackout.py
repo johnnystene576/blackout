@@ -22,10 +22,10 @@ def error(text):
 	print(ansi.RESET + ansi.BOLD + ansi.RED + " [-] " + ansi.RESET + text)
 
 def success(text):
-	print(ansi.RESET + ansi.BOLD + ansi.GREEN + " [-] " + ansi.RESET + text)
+	print(ansi.RESET + ansi.BOLD + ansi.GREEN + " [+] " + ansi.RESET + text)
 
 def info(text):
-	print(ansi.RESET + ansi.BOLD + ansi.MAGENTA + " [-] " + ansi.RESET + text)
+	print(ansi.RESET + ansi.BOLD + ansi.MAGENTA + " [*] " + ansi.RESET + text)
 
 print(versionString)
 
@@ -78,7 +78,7 @@ while True:
 				promptColor = ansi.WHITE
 		except:
 			info("Usage:")
-			print("      color red/green/blue/yellow/purple/magenta/cyan/white")
+			print("     color red/green/blue/yellow/purple/magenta/cyan/white")
 	
 	# clear screen
 	if(command == "cls" or command == "clear"):
